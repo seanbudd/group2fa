@@ -1,8 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
+import './assets/index.css';
+import App from './views/App';
 import * as serviceWorker from './serviceWorker';
+import database from './database';
+
+console.log(database.models);
 
 ReactDOM.render(<App />, document.getElementById('root'));
 
