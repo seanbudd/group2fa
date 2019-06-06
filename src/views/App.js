@@ -1,18 +1,27 @@
 import React from 'react';
-import Secret from '../models/secret'
-import SecretView from './secret'
 import '../assets/App.css';
+import Login from './Login'
+import CreateUser from './CreateUser'
+import UserSecrets from './UserSecrets';
 
-function App() {
-  return (
-    <div className="App">
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {user_id: null};
+  }
+
+  render() {
+    let content = this.state.user_id != null ? 
+          (<UserSecrets current_user_id={this.state.user_id} />)
+          : (<div><CreateUser parent = {this} /> <Login parent = {this} /></div>)
+    return (
+      <div className="App">
       <header className="App-header">
-        <h1>Your Secrets</h1>
-        {[123432, 56423, 214352342, 23454243].map(s => <SecretView {...new Secret({thing1: s})} />)
-        }
+        {content}
       </header>
-    </div>
-  );
+      </div>
+    )
+  }
 }
 
 export default App;

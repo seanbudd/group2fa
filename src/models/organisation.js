@@ -1,9 +1,18 @@
-export default (sequelize, DataTypes) => {
-    class Organisation extends sequelize.Model {}
+const Model = require('sequelize').Model;
+module.exports =  (sequelize, DataTypes) => {
+    class Organisation extends Model {}
     Organisation.init(
         {
-            organisation_id: { type: DataTypes.UUIDV4, primaryKey: true },
-            name: { type: DataTypes.STRING }
+            organisation_id: { 
+                type: DataTypes.UUID, 
+                primaryKey: true, 
+                allowNull: false,
+                defaultValue: DataTypes.UUIDV4 
+            },
+            name: { 
+                type: DataTypes.STRING,
+                allowNull: false
+            }
         },
         {
         modelName: 'organisation',

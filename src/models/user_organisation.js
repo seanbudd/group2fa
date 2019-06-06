@@ -1,6 +1,7 @@
+const Model = require('sequelize').Model;
 
-export default (sequelize, DataTypes) => {
-    class UserOrganisation extends sequelize.Model {}
+module.exports =  (sequelize, DataTypes) => {
+    class UserOrganisation extends Model {}
     UserOrganisation.init({},
         {
         modelName: 'user_organisation',
@@ -8,6 +9,7 @@ export default (sequelize, DataTypes) => {
         paranoid: true,
         freezeTableName: true,
         version: true,
+        underscored: true,
         sequelize
         }
     )

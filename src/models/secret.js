@@ -1,10 +1,22 @@
-export default (sequelize, DataTypes) => {
-    class Secret extends sequelize.Model {}
+const Model = require('sequelize').Model;
+module.exports = (sequelize, DataTypes) => {
+    class Secret extends Model {}
     Secret.init(
         {
-            secret_id: { type: DataTypes.UUIDV4, primaryKey: true },
-            secret: { type: DataTypes.STRING },
-            name: { type: DataTypes.STRING }
+            secret_id: { 
+                type: DataTypes.UUID, 
+                primaryKey: true, 
+                allowNull: false,
+                defaultValue: DataTypes.UUIDV4 
+            },
+            secret: { 
+                type: DataTypes.STRING,
+                allowNull: false,
+            },
+            name: {                 
+                type: DataTypes.STRING,
+                allowNull: false,
+            }
         },
         {
         modelName: 'secret',
@@ -12,6 +24,7 @@ export default (sequelize, DataTypes) => {
         paranoid: true,
         freezeTableName: true,
         version: true,
+        sequelize
         }
     )
     return Secret;
