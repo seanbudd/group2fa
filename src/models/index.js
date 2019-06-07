@@ -6,16 +6,14 @@ const sequelize = new Sequelize('postgres://postgres:postgres@localhost:5432/tes
 
 const connect = sequelize.authenticate();
 
-const model = name => database.models[name]; //as typeof Model;
-
 const models = {}
 
 var model_names = [
-    'organisation_secret', 
-    'organisation', 
+    'organisation_secret',
+    'organisation',
     'secret',
-    'user_secret', 
-    'user_organisation', 
+    'user_secret',
+    'user_organisation',
     'user'
 ];
 
@@ -33,5 +31,5 @@ module.exports = {
     sequelize,
     models,
     connect,
-    model
+    model: name => models[name]
 };

@@ -12,6 +12,7 @@
 # production
 /build
 /lib
+/docker-compose.yml
 
 # misc
 .DS_Store

@@ -1,0 +1,20 @@
+version: "2"
+services:
+  group2fa:
+    build:
+      context: .
+      dockerfile: dockerfile
+    ports:
+      - 3000:3000
+    command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; npm start'
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/test_group2fa
+      - PORT=3000
+  db:
+    image: postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=test_group2fa
