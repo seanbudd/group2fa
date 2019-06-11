@@ -1,5 +1,5 @@
 import React from 'react';
-import {Component} from 'react';
+import { Component } from 'react';
 import { TOTP } from '@akanass/rx-otp';
 
 class OTPGenerator extends Component {

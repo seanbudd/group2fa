@@ -37,8 +37,10 @@ class CreateUser extends React.Component {
         <label>
           Email:
           <input type="text" name="email" value={this.state.email} onChange={this.handleChange} />
+        </label>
+        <label>
           Password:
-          <input type="text" name="password" value={this.state.password} onChange={this.handleChange} />
+          <input type="password" name="password" value={this.state.password} onChange={this.handleChange} />
         </label>
         <input type="submit" value="Submit" />
       </form>

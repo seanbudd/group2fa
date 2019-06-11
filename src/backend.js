@@ -55,6 +55,25 @@ app.post('/create_secret', function (req, res) {
   });
 })
 
+app.post('/add_user_to_secret', function (req, res) {
+  let secret = database.models.secret.findByPk(req.body.secret_id);
+  let user = database.models.user.findAll({
+    where:{
+      email: req.body.email
+    }
+  })
+  Promise.all([secret, user]).then(([this_secret, this_user]) => {
+    let u_s = database.models.user_secret
+      .build({
+          consumer_2fa_secret: crypto.randomBytes(16).toString('hex'),
+      })
+    u_s.setUser(this_user[0], {save: false})
+    u_s.setSecret(this_secret, {save: false})
+    u_s.save()
+    .then(() => res.send({success: true, secret: this_secret}))
+  });
+})
+
 app.post('/get_secrets', function (req, res) {
   database.models.user_secret.findAll(
     {
