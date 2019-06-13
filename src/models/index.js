@@ -1,6 +1,6 @@
 const Sequelize = require('sequelize').Sequelize;
 
-const sequelize = new Sequelize('postgres://postgres:postgres@localhost:5432/test_group2fa', {
+const sequelize = new Sequelize(process.env.DATABASE_URL, {
     logging: false
 });
 
@@ -8,7 +8,7 @@ const connect = sequelize.authenticate();
 
 const models = {}
 
-var model_names = [
+const model_names = [
     'organisation_secret',
     'organisation',
     'secret',

@@ -1,3 +1,5 @@
+const TOTP = require('@akanass/rx-otp').TOTP;
+
 const Model = require('sequelize').Model;
 module.exports = (sequelize, DataTypes) => {
     class Secret extends Model {}
@@ -12,11 +14,18 @@ module.exports = (sequelize, DataTypes) => {
             secret: { 
                 type: DataTypes.STRING,
                 allowNull: false,
+                get: () => null
             },
             name: {                 
                 type: DataTypes.STRING,
                 allowNull: false,
+            },
+            secure: {                 
+                type: DataTypes.BOOLEAN,
+                allowNull: false,
+                defaultValue: false
             }
+            
         },
         {
         modelName: 'secret',
@@ -24,6 +33,11 @@ module.exports = (sequelize, DataTypes) => {
         paranoid: true,
         freezeTableName: true,
         version: true,
+        _unsafeGetSecret: (success_callback) => TOTP.generate(this.getDataValue('secret')).subscribe(success_callback),
+        getSecret: (success_callback, mfa_token, user_secret) => 
+            this.getDataValue('secure') ? 
+            user_secret.verify(mfa_token, this._unsafeGetSecret(success_callback)) : 
+            this._unsafeGetSecret(success_callback),
         sequelize
         }
     )

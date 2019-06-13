@@ -1,6 +1,7 @@
 version: "2"
 services:
   group2fa:
+    hostname: localhost
     build:
       context: .
       dockerfile: dockerfile

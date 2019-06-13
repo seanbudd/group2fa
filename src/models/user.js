@@ -1,4 +1,5 @@
 const Model = require('sequelize').Model;
+const bcrypt = require('bcrypt')
 
 module.exports =  (sequelize, DataTypes) => {
     class User extends Model {}
@@ -17,8 +18,10 @@ module.exports =  (sequelize, DataTypes) => {
             },
             password: { 
                 type: DataTypes.STRING, 
-                allowNull: false 
-            }
+                allowNull: false,
+                get: () => null,
+                set: (raw_password) => bcrypt.hash(raw_password, 10, (err, hash) => this.setDataValue('password', hash))
+            },
         },
         {
         modelName: 'user',
@@ -26,6 +29,7 @@ module.exports =  (sequelize, DataTypes) => {
         paranoid: true,
         freezeTableName: true,
         version: true,
+        isPassword: (raw_password, callback) => bcrypt.compare(raw_password, this.getDataValue('password'), callback),
         sequelize
         }
     )

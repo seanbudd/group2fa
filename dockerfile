@@ -12,4 +12,5 @@ RUN apt-get update && apt-get install -y  \
     && npm install
 
 EXPOSE 3000
+EXPOSE 3030
 CMD [ "npm", "start" ]

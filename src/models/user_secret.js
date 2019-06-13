@@ -1,4 +1,6 @@
 const Model = require('sequelize').Model;
+const TOTP = require('@akanass/rx-otp').TOTP;
+const crypto = require('crypto');
 
 module.exports =  (sequelize, DataTypes) => {
     class UserSecret extends Model {}
@@ -6,7 +8,9 @@ module.exports =  (sequelize, DataTypes) => {
       {
         consumer_2fa_secret: { 
           type: DataTypes.STRING, 
-          allowNull: false 
+          allowNull: false,
+          defaultValue: () => crypto.randomBytes(16).toString('hex'),
+          get: () => null,
         }
       },
       {
@@ -16,6 +20,8 @@ module.exports =  (sequelize, DataTypes) => {
       freezeTableName: true,
       version: true,
       underscored: true,
+      verify: (mfa_token, success_callback) => 
+          TOTP.verify(mfa_token, this.getDataValue('user_secret')).subscribe(success_callback),
       sequelize
       }
     )

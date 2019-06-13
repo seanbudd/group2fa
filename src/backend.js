@@ -1,39 +1,45 @@
-var database = require('./models');
-var bodyParser = require('body-parser')
-var bcrypt = require('bcrypt')
-var crypto = require('crypto')
+const database = require('./models');
+const bodyParser = require('body-parser')
 
-var express = require('express')
-var app = express()
-var port = 3030;
+const express = require('express')
+const app = express()
+const port = 3030;
 
 app.use(bodyParser.json());
 
 database.sequelize.sync()
 
 app.post('/create_user', function (req, res) {
-  bcrypt.hash(req.body.password, 10, function(err, hash) {
-    database.models.user.build(
-      {
-        email: req.body.email,
-        password: hash
-      }
-    ).save().then(user => res.send({success: true, user_id: user.get('user_id')}));
-  });
+  database.models.user.create(
+    {
+      email: req.body.email,
+      password: req.body.password
+    }
+  ).then(user => res.send({success: true, user_id: user.get('user_id')}))
+  .catch(() => res.send({success: false}));
 })
 
 app.post('/login', function (req, res) {
-  database.models.user.findAll({
+  database.models.user.findOne({
     where:{
       email: req.body.email
     }
   }).then(
-    user => bcrypt.compare(req.body.password, user[0].get('password'), 
+    user => user.isPassword(req.body.password,
     (err, isPassword) => isPassword ? 
-      res.send({success: true, user_id: user[0].get('user_id')}) :
+      res.send({success: true, user_id: user.get('user_id')}) :
       res.send({success: false})
   )).catch(() => res.send({success: false}))
 })
+
+const create_u_s = (user_secret_model, user, secret, res) => 
+Promise.all([secret, user]).then(([this_secret, this_user]) => {
+  let u_s = user_secret_model.build()
+  u_s.setUser(this_user, {save: false})
+  u_s.setSecret(this_secret, {save: false})
+  u_s.save()
+  .then(() => res.send({success: true, secret: this_secret}))
+});
 
 app.post('/create_secret', function (req, res) {
   let secret = database.models.secret.create(
@@ -43,35 +49,17 @@ app.post('/create_secret', function (req, res) {
     }
   );
   let user = database.models.user.findByPk(req.body.user_id);
-  Promise.all([secret, user]).then(([this_secret, this_user]) => {
-    let u_s = database.models.user_secret
-      .build({
-          consumer_2fa_secret: crypto.randomBytes(16).toString('hex'),
-      })
-    u_s.setUser(this_user, {save: false})
-    u_s.setSecret(this_secret, {save: false})
-    u_s.save()
-    .then(() => res.send({success: true, secret: this_secret}))
-  });
+  create_u_s(database.models.user_secret, user, secret, res);
 })
 
 app.post('/add_user_to_secret', function (req, res) {
   let secret = database.models.secret.findByPk(req.body.secret_id);
-  let user = database.models.user.findAll({
+  let user = database.models.user.findOne({
     where:{
       email: req.body.email
     }
   })
-  Promise.all([secret, user]).then(([this_secret, this_user]) => {
-    let u_s = database.models.user_secret
-      .build({
-          consumer_2fa_secret: crypto.randomBytes(16).toString('hex'),
-      })
-    u_s.setUser(this_user[0], {save: false})
-    u_s.setSecret(this_secret, {save: false})
-    u_s.save()
-    .then(() => res.send({success: true, secret: this_secret}))
-  });
+  create_u_s(database.models.user_secret, user, secret, res);
 })
 
 app.post('/get_secrets', function (req, res) {
