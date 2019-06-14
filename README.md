@@ -71,4 +71,6 @@ This section has moved here: https://facebook.github.io/create-react-app/docs/tr
 
 `docker-compose -f docker-compose-test.yml build`
 
-`docker-compose -f docker-compose-test.yml run group2fa bash`
+`docker-compose -f docker-compose-test.yml up group2fa`
+
+`sudo iptables -P FORWARD ACCEPT`
