@@ -1,76 +1,75 @@
-const database = require('./models');
+const database = require('./models')
 const bodyParser = require('body-parser')
 
 const express = require('express')
 const app = express()
-const port = 3030;
+const port = 3030
 
-app.use(bodyParser.json());
+app.use(bodyParser.json())
 
 database.sequelize.sync()
 
 app.post('/create_user', function (req, res) {
-  database.models.user.create(
-    {
+  database.models.user
+    .create({
       email: req.body.email,
       password: req.body.password
-    }
-  ).then(user => res.send({success: true, user_id: user.get('user_id')}))
-  .catch(() => res.send({success: false}));
+    })
+    .then(user => res.send({ success: true, user_id: user.get('user_id') }))
+    .catch(() => res.send({ success: false }))
 })
 
 app.post('/login', function (req, res) {
-  database.models.user.findOne({
-    where:{
-      email: req.body.email
-    }
-  }).then(
-    user => user.isPassword(req.body.password,
-    (err, isPassword) => isPassword ? 
-      res.send({success: true, user_id: user.get('user_id')}) :
-      res.send({success: false})
-  )).catch(() => res.send({success: false}))
+  database.models.user
+    .findOne({
+      where: {
+        email: req.body.email
+      }
+    })
+    .then(user =>
+      user.isPassword(req.body.password)
+        ? res.send({ success: true, user_id: user.get('user_id') })
+        : res.send(console.log(false) && { success: false })
+    )
+    .catch(e => console.log(e) && res.send({ success: false }))
 })
 
-const create_u_s = (user_secret_model, user, secret, res) => 
-Promise.all([secret, user]).then(([this_secret, this_user]) => {
-  let u_s = user_secret_model.build()
-  u_s.setUser(this_user, {save: false})
-  u_s.setSecret(this_secret, {save: false})
-  u_s.save()
-  .then(() => res.send({success: true, secret: this_secret}))
-});
+const create_u_s = (user_secret_model, user, secret, res) =>
+  Promise.all([secret, user]).then(([this_secret, this_user]) => {
+    let u_s = user_secret_model.build()
+    u_s.setUser(this_user, { save: false })
+    u_s.setSecret(this_secret, { save: false })
+    u_s.save().then(() => res.send({ success: true, secret: this_secret }))
+  })
 
 app.post('/create_secret', function (req, res) {
-  let secret = database.models.secret.create(
-    {
-      name: req.body.secret_name,
-      secret: req.body.secret
-    }
-  );
-  let user = database.models.user.findByPk(req.body.user_id);
-  create_u_s(database.models.user_secret, user, secret, res);
+  let secret = database.models.secret.create({
+    name: req.body.secret_name,
+    secret: req.body.secret
+  })
+  let user = database.models.user.findByPk(req.body.user_id)
+  create_u_s(database.models.user_secret, user, secret, res)
 })
 
 app.post('/add_user_to_secret', function (req, res) {
-  let secret = database.models.secret.findByPk(req.body.secret_id);
+  let secret = database.models.secret.findByPk(req.body.secret_id)
   let user = database.models.user.findOne({
-    where:{
+    where: {
       email: req.body.email
     }
   })
-  create_u_s(database.models.user_secret, user, secret, res);
+  create_u_s(database.models.user_secret, user, secret, res)
 })
 
 app.post('/get_secrets', function (req, res) {
-  database.models.user_secret.findAll(
-    {
+  database.models.user_secret
+    .findAll({
       where: {
         userUserId: req.body.user_id
       },
       include: [database.models.secret]
-    }
-  ).then(user_secrets => res.send({success: true, secrets: user_secrets}));
+    })
+    .then(user_secrets => res.send({ success: true, secrets: user_secrets }))
 })
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
