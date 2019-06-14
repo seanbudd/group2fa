@@ -35,17 +35,17 @@ module.exports = (sequelize, DataTypes) => {
       sequelize
     }
   )
-  Secret.prototype._unsafeGetSecret = function (success_callback) {
+  Secret.prototype._unsafeGetTOTP = function (success_callback) {
     TOTP.generate(this.getDataValue('secret')).subscribe(success_callback)
   }
-  Secret.prototype.getSecret = function (
+  Secret.prototype.getTOTP = function (
     success_callback,
     mfa_token,
     user_secret
   ) {
     this.getDataValue('secure')
-      ? user_secret.verify(mfa_token, this._unsafeGetSecret(success_callback))
-      : this._unsafeGetSecret(success_callback)
+      ? user_secret.verify(mfa_token, this._unsafeGetTOTP(success_callback))
+      : this._unsafeGetTOTP(success_callback)
   }
   return Secret
 }

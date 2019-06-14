@@ -16,7 +16,7 @@ class SecretView extends React.Component {
     return (
       <div className='secretView'>
         <h2>{this.props.name}</h2>
-        {/* <OTPGenerator secret={this.props.secret}/> */}
+        <OTPGenerator secret_id={this.props.secret_id} {...this.props} />
         {details}
       </div>
     )

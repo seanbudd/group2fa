@@ -72,4 +72,20 @@ app.post('/get_secrets', function (req, res) {
     .then(user_secrets => res.send({ success: true, secrets: user_secrets }))
 })
 
+app.post('/get_totp', function (req, res) {
+  database.models.user_secret
+    .findOne({
+      where: {
+        userUserId: req.body.user_id,
+        secretSecretId: req.body.secret_id
+      },
+      include: [database.models.secret]
+    })
+    .then(user_secret =>
+      user_secret.secret.getTOTP(totp =>
+        res.send({ success: true, totp: totp })
+      )
+    )
+})
+
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
