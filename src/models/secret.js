@@ -43,9 +43,14 @@ module.exports = (sequelize, DataTypes) => {
     mfa_token,
     user_secret
   ) {
-    this.getDataValue('secure')
-      ? user_secret.verify(mfa_token, this._unsafeGetTOTP(success_callback))
-      : this._unsafeGetTOTP(success_callback)
+    if (this.getDataValue('secure')) {
+      try {
+        user_secret.verify(mfa_token)
+      } catch (e) {
+        console.log(e)
+      }
+    }
+    this._unsafeGetTOTP(success_callback)
   }
   return Secret
 }

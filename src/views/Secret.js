@@ -1,5 +1,6 @@
 import React from 'react'
 import OTPGenerator from '../components/OTPGenerator'
+import SecretDetails from '../components/SecretDetails'
 import '../assets/App.css'
 
 class SecretView extends React.Component {
@@ -9,14 +10,14 @@ class SecretView extends React.Component {
   }
   render () {
     let details = this.state.manage ? (
-      <div>People</div>
+      <SecretDetails {...this.props} />
     ) : (
       <button onClick={this.toggleManage}>Manage</button>
     )
     return (
       <div className='secretView'>
         <h2>{this.props.name}</h2>
-        <OTPGenerator secret_id={this.props.secret_id} {...this.props} />
+        <OTPGenerator {...this.props} />
         {details}
       </div>
     )
