@@ -29,7 +29,7 @@ class UserSecrets extends React.Component {
         <header className='UserSecrets-header'>
           <h1>Your Secrets</h1>
           {this.state.secrets.map(s => (
-            <SecretView {...s} />
+            <SecretView key={s.secret_id} {...s} {...this.props} />
           ))}
           <h2>Create Secret</h2>
           {<CreateSecret parent={this} {...this.props} />}

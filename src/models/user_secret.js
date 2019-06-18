@@ -24,7 +24,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   )
   UserSecret.prototype.verify = function (mfa_token, success_callback) {
-    TOTP.verify(mfa_token, this.getDataValue('user_secret')).subscribe(
+    TOTP.verify(mfa_token, this.getDataValue('consumer_2fa_secret')).subscribe(
       success_callback
     )
   }
