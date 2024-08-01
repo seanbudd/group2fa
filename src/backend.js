@@ -72,4 +72,41 @@ app.post('/get_secrets', function (req, res) {
     .then(user_secrets => res.send({ success: true, secrets: user_secrets }))
 })
 
+app.post('/toggle_secure', function (req, res) {
+  database.models.user_secret
+    .findOne({
+      where: {
+        userUserId: req.body.user_id,
+        secretSecretId: req.body.secret_id
+      },
+      include: [database.models.secret]
+    })
+    .then(user_secret =>
+      user_secret.secret.update({ secure: true }).then(
+        res.send({
+          success: true,
+          one_time_secret: user_secret.getDataValue('consumer_2fa_secret')
+        })
+      )
+    )
+})
+
+app.post('/get_totp', function (req, res) {
+  database.models.user_secret
+    .findOne({
+      where: {
+        userUserId: req.body.user_id,
+        secretSecretId: req.body.secret_id
+      },
+      include: [database.models.secret]
+    })
+    .then(user_secret =>
+      user_secret.secret.getTOTP(
+        totp => res.send({ success: true, totp: totp }),
+        req.body.mfa_token,
+        user_secret
+      )
+    )
+})
+
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
